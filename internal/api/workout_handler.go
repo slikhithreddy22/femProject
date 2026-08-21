@@ -47,3 +47,14 @@ func (wh *WorkoutHandler) HandleCreateNewWorkout(w http.ResponseWriter, r *http.
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(createWorkout)
 }
+
+func (wh *WorkoutHandler) HandleUpdateWorkout(w http.ResponseWriter, r *http.Request) {
+	var workout store.Workout
+	err := json.NewDecoder(r.Body).Decode(&workout)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "failed to update workout", http.StatusInternalServerError)
+		return
+	}
+	updateWorkout, err := wh.workoutStore.UpdateWorkout(&workout)
+}
