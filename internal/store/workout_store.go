@@ -111,16 +111,16 @@ func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) (*Workout, error
 		duration_minutes = $3,
 		calories_burned = $4
 		WHERE id = $5`
-	_, err = tx.Exec(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned, workout.ID)
+	result, err := tx.Exec(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned, workout.ID)
+	if err != nil {
+		return nil, err
+	}
+	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return nil, err
 	}
 	delete_query := `DELETE FROM workout_entries WHERE workout_id=$1`
-	resutls, err := tx.Exec(delete_query, workout.ID)
-	if err != nil {
-		return nil, err
-	}
-	rowsAffected, err := resutls.RowsAffected()
+	_, err = tx.Exec(delete_query, workout.ID)
 	if rowsAffected == 0 {
 		return nil, sql.ErrNoRows
 	}
@@ -135,7 +135,7 @@ func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) (*Workout, error
 	    duration_seconds,
 	    weight,
 	    notes,
-_,    	order_index
+		order_index
 	)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
