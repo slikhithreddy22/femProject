@@ -157,18 +157,18 @@ func (pg *PostgresWorkoutStore) DeleteWorkout(id int64) error {
 		return err
 	}
 	defer tx.Rollback()
-	
+
 	query := `DELETE FROM workout_entries WHERE workout_id=$1`
 	_, err = tx.Exec(query, id)
 	if err != nil {
 		return err
 	}
-	
+
 	query = `DELETE FROM workouts WHERE id= $1`
 	_, err = tx.Exec(query, id)
 	if err != nil {
 		return err
 	}
-	
+
 	return tx.Commit()
 }
